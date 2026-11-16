@@ -10,7 +10,7 @@ A computer-vision and robotics engineering demonstration for warehouse pallet so
 
 | Operations dashboard | YOLO detection preview |
 | --- | --- |
-| ![Dashboard preview](previews/dashboard_main.png) | ![YOLO bounding box preview](previews/four_detections_confidence_fixed.png) |
+| ![Dashboard preview](previews/dashboard_main.png) | ![YOLO bounding box preview](previews/step06_all_multi_driver_preview.png) |
 
 Screenshots show development/testing states, not measured production performance.
 
