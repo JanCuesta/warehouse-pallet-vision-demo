@@ -1,0 +1,15 @@
+driver,client,order_id,product,required_quantity
+Driver A,Client A1,ORD-A01,apple,4
+Driver A,Client A1,ORD-A01,banana,2
+Driver A,Client A1,ORD-A02,apple,3
+Driver A,Client A2,,orange,1
+Driver A,Client A2,,banana,5
+Driver B,Client B1,,apple,3
+Driver B,Client B1,,orange,2
+Driver B,Client B2,ORD-B01,banana,4
+Driver B,Client B2,ORD-B01,apple,2
+Driver B,Client B2,ORD-B02,orange,3
+Driver C,Client C1,,apple,6
+Driver C,Client C1,,orange,2
+Driver C,Client C2,,banana,3
+Driver C,Client C2,,orange,1

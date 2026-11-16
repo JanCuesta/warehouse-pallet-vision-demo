@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "whpv-core"
+version = "0.1.0"
+description = "ROS-independent detection and matching for WHPV demo"
+requires-python = ">=3.10"
+dependencies = ["numpy", "ultralytics"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

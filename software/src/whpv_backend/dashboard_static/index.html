@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f6f7">
+  <title>Order Progress · Warehouse Pallet Vision</title>
+  <link rel="stylesheet" href="/dashboard-assets/style.css">
+  <script src="/dashboard-assets/app.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="/dashboard" aria-label="Warehouse Pallet Vision dashboard">
+      <span class="brand-icon" aria-hidden="true">W</span>
+      <span class="brand-text"><strong>WAREHOUSE</strong><small>PALLET VISION</small></span>
+    </a>
+    <span class="environment">SIMULATED DATA</span>
+    <div class="header-right">
+      <span class="mode-tag">Detection only</span>
+      <span class="health" id="health" role="status"><span class="health-dot"></span><span id="health-text">Connecting...</span></span>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="page-intro">
+      <div><div class="eyebrow">OPERATIONS / ORDER MANAGEMENT</div><h1>Order progress</h1><p>Track what each driver needs. Manual changes update the shared order database.</p></div>
+      <div class="intro-note"><span class="note-icon" aria-hidden="true">i</span><span>Detection does not complete orders. Workers control every quantity.</span></div>
+    </div>
+
+    <section class="metrics" aria-label="Order overview">
+      <div class="metric"><span class="metric-label">Drivers</span><div class="metric-number" id="stat-drivers">—</div><span class="metric-sub">Active order groups</span></div>
+      <div class="metric"><span class="metric-label">Clients</span><div class="metric-number" id="stat-clients">—</div><span class="metric-sub">Across all drivers</span></div>
+      <div class="metric"><span class="metric-label">Product requirements</span><div class="metric-number" id="stat-requirements">—</div><span class="metric-sub">Distinct order lines</span></div>
+      <div class="metric metric-progress"><span class="metric-label">Units completed</span><div class="metric-number"><span id="stat-completed">—</span><span class="metric-denominator"> / <span id="stat-required">—</span></span></div><div class="bar summary-bar"><div id="overall-bar" class="bar-fill"></div></div></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="sidebar" aria-label="Driver navigation">
+        <div class="sidebar-head"><h2>Drivers</h2><span id="sidebar-driver-count" class="count-pill">0</span></div>
+        <div id="driver-nav" class="driver-nav"><p class="muted">Loading drivers…</p></div>
+        <div class="sidebar-foot"><span class="small-label">WORKSPACE</span><strong>Local demonstration</strong><p>All progress is saved to SQLite. Camera overlays share this backend through the ROS adapter.</p></div>
+      </aside>
+
+      <section class="content-panel" aria-label="Order requirements">
+        <div class="content-head"><div><h2>Requirements</h2><p>Driver → Client → Order → Product</p></div><span class="update-state" id="last-update">Waiting for data</span></div>
+        <div class="toolbar">
+          <label class="search-field" for="search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="search" type="search" placeholder="Search driver, client, order or product" autocomplete="off"></label>
+          <div class="filter-group" role="group" aria-label="Progress filter">
+            <button type="button" class="filter active" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="filter" data-filter="outstanding" aria-pressed="false">Outstanding</button>
+            <button type="button" class="filter" data-filter="completed" aria-pressed="false">Completed</button>
+          </div>
+        </div>
+        <p id="system-message" class="system-message" role="status" aria-live="polite"></p>
+        <div id="order-groups" class="order-groups"><div class="loading">Loading order requirements…</div></div>
+        <footer class="panel-foot"><span>Use + / − or enter a completed quantity, then press Enter or click outside the field.</span><span>Quantity changes are saved automatically.</span></footer>
+      </section>
+    </div>
+    <footer class="page-foot">Warehouse Pallet Vision · Detection-only demo <span>Robot controls are separate from operational order progress</span></footer>
+  </main>
+</body>
+</html>

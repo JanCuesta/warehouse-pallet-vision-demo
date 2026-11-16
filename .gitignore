@@ -1,0 +1,23 @@
+# Local environments and generated Python files
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ROS 2 workspace build outputs
+sim/ros2_ws/build/
+sim/ros2_ws/install/
+sim/ros2_ws/log/
+
+# Environment files / transient database journals
+.env
+.env.*
+*.sqlite3-wal
+*.sqlite3-shm
+
+# KUKA implementation scripts are intentionally not in this public snapshot.
+# Remove this rule when publishing the reviewed final robot scripts.
+sim/isaac_sim/scripts/
