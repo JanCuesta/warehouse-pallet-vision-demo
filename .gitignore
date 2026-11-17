@@ -20,4 +20,7 @@ sim/ros2_ws/log/
 
 # KUKA implementation scripts are intentionally not in this public snapshot.
 # Remove this rule when publishing the reviewed final robot scripts.
-sim/isaac_sim/scripts/
+
+# Publish only the validated KUKA demonstration controller.
+sim/isaac_sim/scripts/*
+!sim/isaac_sim/scripts/demonstration_script.py
