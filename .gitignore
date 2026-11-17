@@ -24,3 +24,8 @@ sim/ros2_ws/log/
 # Publish only the validated KUKA demonstration controller.
 sim/isaac_sim/scripts/*
 !sim/isaac_sim/scripts/demonstration_script.py
+
+# Generated demonstration runtime files
+/yolo11n.pt
+/sim/isaac_sim/reports/*.json
+/sim/isaac_sim/reports/*.txt

@@ -1,84 +1,55 @@
 # Repository Structure — Warehouse Pallet Vision Demo
 
-**Status:** Current public development snapshot (not a production release).
+This document describes the published **simulation demonstration** and the responsibilities of each module. See [`README.md`](README.md) for setup, videos, demonstrations and limitations.
 
-This document describes the **published demonstration repository** and the division of responsibilities. The original development workspace contains additional KUKA movement/calibration scripts and internal notes that are intentionally absent from this public snapshot.
-
-## Layout
-
-```text
-warehouse-pallet-vision-demo/
-├── README.md
-├── REPOSITORY_STRUCTURE.md
-├── previews/                              # Development screenshots
-├── software/
-│   ├── pyproject.toml
-│   ├── data/                               # Fictional order CSVs and optional sample DB
-│   ├── models/                             # Optional local model assets
-│   ├── src/
-│   │   ├── whpv_core/                     # Detection, matching, visualization, types
-│   │   └── whpv_backend/                  # FastAPI, SQLite, dashboard, services
-│   └── tests/                              # Python tests
-└── sim/
-    ├── isaac_sim/
-    │   ├── assets/textures/               # Fruit/sign textures
-    │   ├── scenes/Worlds/                 # USD scenes, including Same_zize_boxes.usd
-    │   └── reports/                       # Optional generated development reports
-    └── ros2_ws/
-        ├── src/whpv_perception_ros/        # ROS 2 perception/matching adapters
-        ├── src/whpv_bringup/              # Placeholder for integrated bringup
-        └── src/whpv_robot_bridge/         # Placeholder; command bridge not complete
-```
-
-Some directories may contain placeholders or experimental files. Scene paths should be treated as **Isaac Sim assets**, not as a standalone runnable robotics application.
-
-## Ownership and boundaries
+## Main components
 
 | Component | Location | Responsibility |
 | --- | --- | --- |
-| Reusable detection and matching logic | `software/src/whpv_core/` | Image-array detection, eligible driver/client matching, 2D overlays and shared types; no Isaac/ROS dependencies in the core |
-| Application API and state | `software/src/whpv_backend/` | FastAPI endpoints, SQLite persistence, order/count services and dashboard |
-| Demo scenarios | `software/data/` | Synthetic CSV orders and optional local example database; not real customer data |
-| Software verification | `software/tests/` | Core/backend/UI and integration test coverage |
-| ROS 2 adapters | `sim/ros2_ws/src/whpv_perception_ros/` | Image transport, YOLO output and adapters to the shared core |
-| Scene and visual assets | `sim/isaac_sim/` | Simulator scenes, pallet/box assets, textures and visual references |
-| KUKA manipulation | Not yet included | Independently developed Isaac controller using saved poses and suction gripper; full tested release pending |
-| Robot command bridge | Planned | End-to-end source-selection/command/feedback integration is not complete |
+| Setup and launch | `scripts/setup_demo.sh`, `scripts/launch_demo.sh` | Install Python/ROS dependencies and start five live services (backend, YOLO, bridge, matcher, overlay) |
+| Shared perception | `software/src/whpv_core/` | YOLO integration, 2D detection data, visual overlays and common logic |
+| Order backend | `software/src/whpv_backend/` | FastAPI, SQLite, live eligibility queries and dashboard |
+| Fictional scenarios | `software/data/routes_demo.csv`, `software/data/routes_alternative.csv` | Three drivers, four boxes each; 12 source boxes total |
+| Software tests | `software/tests/` | Backend and shared software tests |
+| ROS 2 perception | `sim/ros2_ws/src/whpv_perception_ros/` | Camera subscriber, detector, order matcher, image overlay |
+| YOLO snapshot | `sim/ros2_ws/scripts/whpv_yolo_snapshot_bridge.py` | Write fresh ROS YOLO results to a JSON file for Isaac Sim's controller |
+| Simulated scene | `sim/isaac_sim/scenes/Worlds/IsaacSim_demonstration.usd` | Fixed KUKA robot, camera, boxes and pallets |
+| Robot demonstration | `sim/isaac_sim/scripts/demonstration_script.py` | Read remaining orders, verify product using YOLO, execute predefined pick/place movements, and update API counts |
+| Scene resources | `sim/isaac_sim/assets/` | Simulation visuals and textures |
+| Preview images | `previews/` | Dashboard and annotated-camera screenshots |
 
-## Data paths
-
-**Perception and matching:**
-
-```text
-Isaac Sim RGB -> ROS 2 -> YOLO class + bbox
-                          -> candidate driver/client matches
-                          -> annotated camera view
-```
-
-**Local orders and completion progress:**
+## Runtime data paths
 
 ```text
-Fictional CSV -> FastAPI/SQLite -> driver / client / order requirements
-                                     -> completed and remaining quantities
-                                     -> operations dashboard
+Isaac Sim RGB camera
+   -> ROS 2 /warehouse/camera/image_raw
+   -> YOLO /warehouse/perception/detections_json
+       |                             |
+       v                             v
+  Order matcher                Snapshot bridge
+       |                             |
+  FastAPI/SQLite                   yolo_latest.json
+       |                             |
+  Driver overlay                   Isaac Sim KUKA controller
+       |                             |
+  Annotated ROS image           Predefined pose transfer
+                                     |
+                              API completed-quantity update
+                                     |
+                                  Dashboard
 ```
 
-**Robot simulation (under integration):**
+The robot has a **fixed top-to-bottom pickup sequence** and **four saved destination slots per driver**. YOLO provides a product-class check in 2D before each transfer; it does **not** generate arbitrary 3D grasp poses or collision-free trajectories. The backend receives completion updates after commanded movements, not independent physical-placement verification.
 
-```text
-Known source box / saved PICK pose -> KUKA transfer -> PLACE pose
-                    -> API requirement completion update
-```
+## Generated local artifacts
 
-The current robot transfer script uses a **predefined box sequence**, and the planned YOLO verification of expected visible products is not yet integrated. A 2D bounding box does **not** by itself provide a 3D grasp pose. The simulation has known box identities and preconfigured poses.
+Do **not** commit environment files, ROS build directories, YOLO model downloads, live snapshots, simulation reports, or test databases. Typical generated paths include:
 
-## What this repository is not
+- `.venv/`
+- `sim/ros2_ws/{build,install,log}/`
+- `sim/isaac_sim/reports/yolo_latest.json`
+- `sim/isaac_sim/reports/kuka_all_boxes_backend_counts_report.txt`
+- `yolo11n.pt`
+- `/tmp/whpv-demo.*/` (launcher logs and temporary SQLite database)
 
-- Not a complete, reproducible YOLO-controlled KUKA system at the current release stage.
-- Not a real-warehouse deployment or a real-camera benchmark.
-- Not an autonomous robotic picking planner with depth-based pose estimation or collision guarantees.
-- Not the commercial warehouse MVP; the latter will require independent product catalog, document import/review, local deployment and field validation.
-
-## Publishing policy
-
-The public repository may include source, tests, sample data, USD scenes and screenshots. Internal source-of-truth documents, iterative README files and unfinished KUKA calibration/movement scripts stay in the original development workspace until deliberately published. Only fictional or otherwise authorized data/assets should be committed.
+The repository is a simulation/portfolio demo rather than a production warehouse solution. Documentation and example data are intended to be public; private project plans, credentials and experimental scripts should remain outside this repository.

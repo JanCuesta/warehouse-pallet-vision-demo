@@ -250,6 +250,24 @@ start_service bridge bash -c '
   exec "$5" "$6"
 ' _ "$ROS_SETUP" "$VENV_ACTIVATE" "$WORKSPACE_SETUP" "$ROOT" "$PYTHON" "$BRIDGE"
 
+# Match YOLO detections against the current FastAPI orders.
+start_service matcher bash -c '
+  source "$1"
+  source "$2"
+  source "$3"
+  cd -- "$4"
+  exec "$5" -m whpv_perception_ros.order_matching_node
+' _ "$ROS_SETUP" "$VENV_ACTIVATE" "$WORKSPACE_SETUP" "$ROOT" "$PYTHON"
+
+# Publish the annotated camera image with driver eligibility.
+start_service overlay bash -c '
+  source "$1"
+  source "$2"
+  source "$3"
+  cd -- "$4"
+  exec "$5" -m whpv_perception_ros.visualization_node
+' _ "$ROS_SETUP" "$VENV_ACTIVATE" "$WORKSPACE_SETUP" "$ROOT" "$PYTHON"
+
 if [[ -n "$ISAAC_LAUNCHER" ]]; then
   setsid bash "$ISAAC_LAUNCHER" >"$RUN_DIR/isaac.log" 2>&1 &
   ISAAC_PID=$!
@@ -277,7 +295,7 @@ Dashboard:         http://127.0.0.1:8000/dashboard
 Fresh demo DB:     $WHPV_DB_PATH
 ROS YOLO topic:    /warehouse/perception/detections_json
 Snapshot file:     $ROOT/sim/isaac_sim/reports/yolo_latest.json
-Logs:              $RUN_DIR/{backend,yolo,bridge}.log
+Logs:              $RUN_DIR/{backend,yolo,bridge,matcher,overlay}.log
 
 Next, in Isaac Sim:
   1. Open $SCENE

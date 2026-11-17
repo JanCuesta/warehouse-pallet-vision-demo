@@ -1,0 +1,10 @@
+driver,client,product,required_quantity
+Driver A,Client A1,orange,2
+Driver A,Client A2,orange,1
+Driver A,Client A2,banana,1
+Driver B,Client B1,banana,2
+Driver B,Client B1,apple,1
+Driver B,Client B2,banana,1
+Driver C,Client C1,apple,2
+Driver C,Client C1,orange,1
+Driver C,Client C2,apple,1
